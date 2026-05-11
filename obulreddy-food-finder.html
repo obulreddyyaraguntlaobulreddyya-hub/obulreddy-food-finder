@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>ObulReddy Food Finder — Discover the Best Local Food</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a0f;--bg2:#111118;--bg3:#18181f;--bg4:#222230;
+  --card:#1a1a24;--card2:#20202e;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --orange:#ff6a2f;--orange2:#ff8c5a;--orangeGlow:rgba(255,106,47,0.18);
+  --yellow:#ffc947;--green:#00d68f;--red:#ff4d6d;--blue:#4f9eff;
+  --text:#f0eff8;--text2:#9896b0;--text3:#55536a;
+  --r:16px;--r2:12px;--r3:8px;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;min-height:100vh;overflow-x:hidden}
+h1,h2,h3,.logo-text{font-family:'Syne',sans-serif}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:6px}
+::selection{background:var(--orange);color:white}
+
+/* ── LOADER ─────────────────────────────────────── */
+#loader{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .5s}
+#loader.hide{opacity:0;pointer-events:none}
+.loader-logo{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;margin-bottom:28px}
+.loader-logo span{color:var(--orange)}
+.loader-bar-wrap{width:200px;height:3px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.loader-bar{height:100%;background:linear-gradient(90deg,var(--orange),var(--yellow));border-radius:3px;animation:loadBar 1.4s ease forwards}
+@keyframes loadBar{from{width:0}to{width:100%}}
+.loader-text{font-size:0.8rem;color:var(--text3);margin-top:14px;letter-spacing:1px}
+
+/* ── NAV ─────────────────────────────────────── */
+nav{position:sticky;top:0;z-index:200;background:rgba(10,10,15,0.88);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:16px}
+.logo-text{font-size:1.25rem;font-weight:800;letter-spacing:-0.5px;flex:1}
+.logo-text span{color:var(--orange)}
+.nav-search-wrap{flex:2;max-width:500px;position:relative}
+.nav-search{width:100%;background:var(--bg3);border:1.5px solid var(--border);border-radius:50px;padding:9px 20px 9px 40px;color:var(--text);font-family:'Nunito',sans-serif;font-size:0.88rem;outline:none;transition:border-color .2s}
+.nav-search:focus{border-color:var(--orange)}
+.nav-search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:0.9rem;pointer-events:none}
+.nav-right{display:flex;align-items:center;gap:10px;margin-left:auto}
+.nav-btn{background:none;border:1px solid var(--border2);color:var(--text2);padding:7px 14px;border-radius:50px;cursor:pointer;font-size:0.8rem;font-family:'Nunito',sans-serif;transition:all .2s;display:flex;align-items:center;gap:5px;white-space:nowrap}
+.nav-btn:hover,.nav-btn.active{background:var(--orange);border-color:var(--orange);color:white}
+.nav-btn .badge{background:var(--red);color:white;font-size:0.65rem;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-left:2px}
+.hamburger{display:none;background:none;border:none;color:var(--text);font-size:1.3rem;cursor:pointer;padding:4px}
+
+/* ── PAGES ─────────────────────────────────────── */
+.page{display:none}
+.page.active{display:block;animation:pageIn .3s ease}
+@keyframes pageIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* ── HOME ─────────────────────────────────────── */
+.hero{padding:60px 24px 40px;text-align:center;position:relative;overflow:hidden;min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.hero-glow{position:absolute;width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(255,106,47,0.1),transparent 70%);top:-200px;left:50%;transform:translateX(-50%);pointer-events:none;animation:glowPulse 6s ease-in-out infinite}
+@keyframes glowPulse{0%,100%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.1)}}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:7px;background:rgba(255,106,47,0.12);border:1px solid rgba(255,106,47,0.25);color:var(--orange);font-size:0.75rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:6px 16px;border-radius:50px;margin-bottom:22px;opacity:0;animation:fadeUp .5s .2s forwards}
+.hero-eyebrow .dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+.hero h1{font-size:clamp(2.4rem,6vw,4.5rem);font-weight:800;line-height:1.05;letter-spacing:-2px;margin-bottom:16px;opacity:0;animation:fadeUp .6s .35s forwards}
+.hero h1 em{font-style:italic;background:linear-gradient(135deg,var(--orange),var(--yellow));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero-sub{font-size:1.05rem;color:var(--text2);max-width:500px;line-height:1.7;margin:0 auto 36px;opacity:0;animation:fadeUp .6s .5s forwards}
+.location-row{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:28px;opacity:0;animation:fadeUp .5s .6s forwards}
+.loc-pill{display:inline-flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--border2);border-radius:50px;padding:8px 18px;font-size:0.85rem;color:var(--text2);cursor:pointer;transition:all .2s}
+.loc-pill:hover{border-color:var(--orange);color:var(--orange)}
+.loc-pulse{width:8px;height:8px;background:var(--green);border-radius:50%;animation:blink 2s infinite;flex-shrink:0}
+/* main search */
+.main-search-wrap{width:100%;max-width:680px;margin:0 auto;opacity:0;animation:fadeUp .6s .65s forwards}
+.main-search-box{display:flex;align-items:center;background:var(--bg3);border:2px solid var(--border2);border-radius:60px;padding:6px 8px 6px 22px;gap:8px;transition:border-color .25s,box-shadow .25s}
+.main-search-box:focus-within{border-color:var(--orange);box-shadow:0 0 0 4px rgba(255,106,47,0.1)}
+.main-search-box input{flex:1;background:none;border:none;outline:none;color:var(--text);font-family:'Nunito',sans-serif;font-size:1rem;padding:8px 0}
+.main-search-box input::placeholder{color:var(--text3)}
+.voice-btn{background:none;border:none;color:var(--text3);font-size:1.15rem;cursor:pointer;padding:6px;transition:color .2s;line-height:1;flex-shrink:0}
+.voice-btn:hover,.voice-btn.on{color:var(--orange)}
+.voice-btn.on{animation:voicePulse 1s infinite}
+@keyframes voicePulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.search-go{background:linear-gradient(135deg,var(--orange),#ff8c30);border:none;color:white;padding:11px 28px;border-radius:50px;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem;transition:all .2s;white-space:nowrap;flex-shrink:0}
+.search-go:hover{transform:scale(1.04);box-shadow:0 6px 24px rgba(255,106,47,0.4)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+
+/* SUGGESTIONS DROPDOWN */
+.suggestions{position:absolute;top:calc(100% + 8px);left:0;right:0;background:var(--card);border:1px solid var(--border2);border-radius:var(--r2);overflow:hidden;z-index:50;box-shadow:0 16px 48px rgba(0,0,0,0.5);display:none}
+.suggestions.open{display:block}
+.sug-item{display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;transition:background .15s;font-size:0.9rem;color:var(--text2)}
+.sug-item:hover{background:var(--bg4);color:var(--text)}
+.sug-icon{font-size:1.1rem;width:24px;text-align:center}
+
+/* RECENT SEARCHES */
+.section-wrap{padding:0 24px 36px;max-width:1140px;margin:0 auto}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.section-header h2{font-size:1.1rem;font-weight:700;letter-spacing:-0.3px}
+.see-all-btn{background:none;border:none;color:var(--orange);cursor:pointer;font-size:0.82rem;font-family:'Nunito',sans-serif;transition:opacity .2s}
+.see-all-btn:hover{opacity:0.7}
+.recent-chips{display:flex;gap:8px;flex-wrap:wrap}
+.recent-chip{display:inline-flex;align-items:center;gap:7px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r3);padding:6px 14px;font-size:0.82rem;color:var(--text2);cursor:pointer;transition:all .2s}
+.recent-chip:hover{border-color:var(--orange);color:var(--orange)}
+.recent-chip .x{color:var(--text3);font-size:0.75rem;padding:0 2px;transition:color .15s}
+.recent-chip .x:hover{color:var(--red)}
+
+/* TRENDING FOODS */
+.trending-scroll{display:flex;gap:12px;overflow-x:auto;padding-bottom:8px;scrollbar-width:none}
+.trending-scroll::-webkit-scrollbar{display:none}
+.trend-card{flex-shrink:0;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px 20px;cursor:pointer;transition:all .25s;display:flex;align-items:center;gap:12px;min-width:160px}
+.trend-card:hover{border-color:var(--orange);transform:translateY(-2px);box-shadow:0 8px 28px var(--orangeGlow)}
+.trend-card.active{background:rgba(255,106,47,0.12);border-color:var(--orange)}
+.trend-icon{font-size:1.8rem}
+.trend-label{font-size:0.88rem;font-weight:600}
+.trend-count{font-size:0.72rem;color:var(--text3);margin-top:2px}
+
+/* CATEGORY FILTERS */
+.cat-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:24px;scrollbar-width:none}
+.cat-row::-webkit-scrollbar{display:none}
+.cat-chip{background:var(--bg3);border:1px solid var(--border);border-radius:50px;padding:8px 18px;cursor:pointer;font-size:0.82rem;font-weight:600;white-space:nowrap;transition:all .2s;color:var(--text2)}
+.cat-chip:hover,.cat-chip.active{background:var(--orange);border-color:var(--orange);color:white}
+
+/* CARDS GRID */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:20px}
+.rest-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:all .25s;position:relative}
+.rest-card:hover{border-color:rgba(255,106,47,0.4);transform:translateY(-4px);box-shadow:0 16px 48px rgba(0,0,0,0.35)}
+.card-thumb{height:180px;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.card-thumb-bg{position:absolute;inset:0}
+.card-thumb-emoji{font-size:4rem;position:relative;z-index:1;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.3))}
+.card-status{position:absolute;top:12px;left:12px;font-size:0.68rem;font-weight:700;padding:4px 10px;border-radius:50px;z-index:2}
+.card-status.open{background:rgba(0,214,143,0.18);border:1px solid rgba(0,214,143,0.35);color:var(--green)}
+.card-status.closed{background:rgba(255,77,109,0.18);border:1px solid rgba(255,77,109,0.35);color:var(--red)}
+.card-fav-btn{position:absolute;top:12px;right:12px;background:rgba(0,0,0,0.55);border:none;border-radius:50%;width:34px;height:34px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;z-index:2;transition:transform .2s,background .2s}
+.card-fav-btn:hover{transform:scale(1.15)}
+.card-fav-btn.faved{background:rgba(255,77,109,0.3)}
+.card-badge{position:absolute;bottom:12px;left:12px;background:linear-gradient(135deg,var(--orange),var(--yellow));color:var(--bg);font-size:0.65rem;font-weight:800;padding:3px 10px;border-radius:50px;z-index:2;letter-spacing:0.5px}
+.card-body{padding:16px}
+.card-name{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-cuisine{font-size:0.78rem;color:var(--text3);margin-bottom:12px}
+.card-stats{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.cstat{display:flex;align-items:center;gap:4px;font-size:0.78rem}
+.cstat.rating{color:var(--yellow);font-weight:600}
+.cstat.dist,.cstat.price{color:var(--text2)}
+.card-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.ctag{background:var(--bg4);border-radius:4px;padding:2px 8px;font-size:0.7rem;color:var(--text3)}
+.card-actions{display:flex;gap:8px;margin-top:14px}
+.btn-directions{flex:1;background:rgba(255,106,47,0.12);border:1px solid rgba(255,106,47,0.28);color:var(--orange);padding:9px;border-radius:var(--r3);cursor:pointer;font-size:0.8rem;font-family:'Nunito',sans-serif;font-weight:600;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn-directions:hover{background:var(--orange);color:white;border-color:var(--orange)}
+.btn-save{background:var(--bg4);border:1px solid var(--border);color:var(--text2);padding:9px 13px;border-radius:var(--r3);cursor:pointer;font-size:0.85rem;transition:all .2s}
+.btn-save:hover{border-color:var(--red);color:var(--red)}
+.btn-save.faved{background:rgba(255,77,109,0.15);border-color:var(--red);color:var(--red)}
+
+/* FILTER ROW */
+.filter-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;scrollbar-width:none}
+.filter-row::-webkit-scrollbar{display:none}
+.filter-btn{background:var(--bg3);border:1px solid var(--border);border-radius:50px;padding:7px 16px;cursor:pointer;font-size:0.8rem;font-weight:600;white-space:nowrap;transition:all .2s;color:var(--text2);display:flex;align-items:center;gap:6px}
+.filter-btn:hover,.filter-btn.active{background:var(--orange);border-color:var(--orange);color:white}
+
+/* RESULTS PAGE */
+.results-meta{padding:16px 24px 0;max-width:1140px;margin:0 auto}
+.results-meta h2{font-size:1.3rem;font-weight:700;margin-bottom:3px}
+.results-meta p{font-size:0.82rem;color:var(--text3)}
+.ai-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(255,106,47,0.1);border:1px solid rgba(255,106,47,0.25);color:var(--orange);border-radius:50px;padding:4px 12px;font-size:0.75rem;font-weight:600;margin-top:8px}
+
+/* DETAIL PAGE */
+.detail-cover{height:260px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.detail-cover-bg{position:absolute;inset:0}
+.detail-cover-emoji{font-size:7rem;position:relative;z-index:1;filter:drop-shadow(0 8px 24px rgba(0,0,0,0.4))}
+.detail-back-btn{position:absolute;top:20px;left:20px;background:rgba(0,0,0,0.6);border:none;color:white;width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;z-index:5;transition:background .2s}
+.detail-back-btn:hover{background:var(--orange)}
+.detail-fav-btn{position:absolute;top:20px;right:20px;background:rgba(0,0,0,0.6);border:none;color:white;width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;z-index:5;transition:all .2s}
+.detail-fav-btn.faved{background:rgba(255,77,109,0.4);color:var(--red)}
+.detail-body{padding:24px;max-width:860px;margin:0 auto}
+.detail-name{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;letter-spacing:-0.5px;margin-bottom:6px}
+.detail-cuisine{font-size:0.9rem;color:var(--text3);margin-bottom:16px}
+.detail-chips{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px}
+.detail-chip{background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:6px 14px;font-size:0.82rem;display:flex;align-items:center;gap:6px}
+.detail-chip.open-chip{color:var(--green);border-color:rgba(0,214,143,0.3);background:rgba(0,214,143,0.08)}
+.detail-chip.closed-chip{color:var(--red);border-color:rgba(255,77,109,0.3);background:rgba(255,77,109,0.08)}
+.detail-section-title{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);margin-bottom:12px;margin-top:24px}
+.detail-tags-wrap{display:flex;gap:8px;flex-wrap:wrap}
+.detail-tag{background:rgba(255,106,47,0.1);border:1px solid rgba(255,106,47,0.2);color:var(--orange);border-radius:8px;padding:5px 14px;font-size:0.82rem}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.detail-info-box{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r2);padding:16px}
+.detail-info-box .lbl{font-size:0.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px}
+.detail-info-box .val{font-size:0.9rem;font-weight:500}
+.review-list{display:flex;flex-direction:column;gap:12px;margin-bottom:24px}
+.review-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r2);padding:16px}
+.review-top{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.review-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--orange),var(--yellow));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.9rem;color:var(--bg);flex-shrink:0}
+.review-name{font-weight:600;font-size:0.88rem}
+.review-stars{font-size:0.75rem;color:var(--yellow);margin-top:1px}
+.review-text{font-size:0.85rem;color:var(--text2);line-height:1.6}
+.btn-big-maps{width:100%;background:linear-gradient(135deg,var(--orange),#ff8c30);border:none;color:white;padding:15px;border-radius:var(--r2);cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;font-size:1.05rem;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px}
+.btn-big-maps:hover{transform:scale(1.01);box-shadow:0 8px 28px rgba(255,106,47,0.4)}
+.btn-big-share{width:100%;background:var(--bg3);border:1px solid var(--border2);color:var(--text);padding:13px;border-radius:var(--r2);cursor:pointer;font-family:'Nunito',sans-serif;font-weight:600;font-size:0.95rem;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-big-share:hover{border-color:var(--blue);color:var(--blue)}
+
+/* FAVORITES PAGE */
+.fav-empty{text-align:center;padding:80px 24px}
+.fav-empty .big-icon{font-size:4rem;margin-bottom:20px}
+.fav-empty h3{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:700;margin-bottom:10px}
+.fav-empty p{color:var(--text3);font-size:0.9rem;margin-bottom:24px}
+
+/* LOADING */
+.loading-wrap{text-align:center;padding:70px 24px}
+.spin{width:44px;height:44px;border:3px solid var(--border2);border-top-color:var(--orange);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-food-icon{font-size:2.2rem;animation:foodBounce .7s ease infinite alternate;display:inline-block;margin-bottom:10px}
+@keyframes foodBounce{to{transform:translateY(-8px)}}
+.loading-wrap p{color:var(--text3);font-size:0.88rem}
+
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:60px 24px}
+.empty-state .icon{font-size:3rem;margin-bottom:14px}
+.empty-state h3{font-family:'Syne',sans-serif;font-weight:700;margin-bottom:8px}
+.empty-state p{color:var(--text3);font-size:0.88rem}
+
+/* AI CHAT ─────────────────────────────────────── */
+.chat-fab{position:fixed;bottom:28px;right:28px;z-index:300;background:linear-gradient(135deg,var(--orange),#ff8c30);border:none;width:58px;height:58px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.5rem;box-shadow:0 8px 32px rgba(255,106,47,0.45);transition:transform .2s;animation:fabPop .5s 1.6s both}
+@keyframes fabPop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+.chat-fab:hover{transform:scale(1.1)}
+.chat-fab.open{background:var(--bg4);box-shadow:none;font-size:1.1rem}
+.chat-panel{position:fixed;bottom:96px;right:28px;z-index:299;width:350px;max-height:520px;background:var(--bg2);border:1px solid var(--border2);border-radius:20px;display:none;flex-direction:column;overflow:hidden;box-shadow:0 24px 70px rgba(0,0,0,0.65)}
+.chat-panel.open{display:flex;animation:chatSlide .25s ease}
+@keyframes chatSlide{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.chat-head{padding:14px 16px;background:var(--bg3);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.chat-head-avatar{width:36px;height:36px;background:linear-gradient(135deg,var(--orange),var(--yellow));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.chat-head-info h3{font-size:0.88rem;font-weight:700}
+.chat-head-info span{font-size:0.72rem;color:var(--green);display:flex;align-items:center;gap:4px}
+.chat-head-info span::before{content:'';display:inline-block;width:6px;height:6px;background:var(--green);border-radius:50%}
+.chat-messages{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+.msg{max-width:86%;padding:10px 14px;border-radius:14px;font-size:0.84rem;line-height:1.55}
+.msg.bot{background:var(--bg3);border:1px solid var(--border);align-self:flex-start;border-bottom-left-radius:4px}
+.msg.user{background:var(--orange);color:white;align-self:flex-end;border-bottom-right-radius:4px}
+.typing-dots{display:flex;gap:4px;align-items:center;padding:2px 0}
+.typing-dots span{width:6px;height:6px;background:var(--text3);border-radius:50%;animation:typing 1s ease infinite}
+.typing-dots span:nth-child(2){animation-delay:.2s}
+.typing-dots span:nth-child(3){animation-delay:.4s}
+@keyframes typing{0%,100%{transform:translateY(0);opacity:0.4}50%{transform:translateY(-5px);opacity:1}}
+.chat-quick-btns{display:flex;gap:6px;flex-wrap:wrap;padding:0 14px 10px}
+.quick-btn{background:var(--bg4);border:1px solid var(--border);border-radius:50px;padding:5px 12px;font-size:0.75rem;color:var(--text2);cursor:pointer;transition:all .15s}
+.quick-btn:hover{border-color:var(--orange);color:var(--orange)}
+.chat-input-row{padding:10px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:center}
+.chat-input-row input{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:50px;padding:9px 16px;color:var(--text);font-family:'Nunito',sans-serif;font-size:0.84rem;outline:none;transition:border-color .2s}
+.chat-input-row input:focus{border-color:var(--orange)}
+.chat-send-btn{background:var(--orange);border:none;border-radius:50%;width:36px;height:36px;color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;transition:background .2s}
+.chat-send-btn:hover{background:var(--orange2)}
+
+/* TOAST ─────────────────────────────────────── */
+.toast{position:fixed;bottom:96px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--bg3);border:1px solid var(--border2);border-radius:50px;padding:11px 22px;font-size:0.84rem;z-index:500;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;display:flex;align-items:center;gap:8px;box-shadow:0 8px 30px rgba(0,0,0,0.4)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* MOBILE DRAWER */
+.mob-drawer{position:fixed;top:0;right:-100%;width:80%;max-width:300px;height:100vh;background:var(--bg2);border-left:1px solid var(--border);z-index:400;transition:right .3s;padding:24px;display:flex;flex-direction:column;gap:16px}
+.mob-drawer.open{right:0}
+.mob-drawer-close{background:none;border:none;color:var(--text);font-size:1.4rem;cursor:pointer;align-self:flex-end;margin-bottom:8px}
+.mob-drawer a{color:var(--text2);text-decoration:none;font-size:1rem;font-weight:600;padding:12px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;transition:color .2s}
+.mob-drawer a:hover{color:var(--orange)}
+.mob-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:399;display:none}
+.mob-overlay.show{display:block}
+
+/* STATS BANNER */
+.stats-banner{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin:0 0 36px}
+.stat-box{background:var(--bg);padding:22px 16px;text-align:center}
+.stat-box .snum{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;color:var(--orange)}
+.stat-box .slbl{font-size:0.72rem;color:var(--text3);margin-top:3px;text-transform:uppercase;letter-spacing:1px}
+
+/* RESPONSIVE */
+@media(max-width:900px){.nav-search-wrap{display:none}.hamburger{display:block}}
+@media(max-width:600px){
+  nav{padding:10px 16px}
+  .hero{padding:40px 16px 32px;min-height:auto}
+  .section-wrap{padding:0 16px 28px}
+  .cards-grid{grid-template-columns:1fr}
+  .results-meta{padding:12px 16px 0}
+  .detail-body{padding:16px}
+  .detail-grid{grid-template-columns:1fr}
+  .chat-panel{width:calc(100vw - 32px);right:16px}
+  .chat-fab{bottom:20px;right:20px}
+}
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="loader-logo">🍛 <span>ObulReddy</span> Food Finder</div>
+  <div class="loader-bar-wrap"><div class="loader-bar"></div></div>
+  <div class="loader-text">Sniffing out the best food near you...</div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- MOBILE OVERLAY -->
+<div class="mob-overlay" id="mobOverlay" onclick="closeMobDrawer()"></div>
+
+<!-- MOBILE DRAWER -->
+<div class="mob-drawer" id="mobDrawer">
+  <button class="mob-drawer-close" onclick="closeMobDrawer()">✕</button>
+  <a href="#" onclick="navTo('home');closeMobDrawer()">🏠 Home</a>
+  <a href="#" onclick="navTo('favorites');closeMobDrawer()">❤️ Saved</a>
+  <a href="#" onclick="openChat();closeMobDrawer()">🤖 AI Assistant</a>
+</div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="logo-text">🍛 <span>ObulReddy</span> Food Finder</div>
+  <div class="nav-search-wrap" style="position:relative">
+    <span class="nav-search-icon">🔍</span>
+    <input class="nav-search" id="navSearchInput" type="text" placeholder="Search any food — biryani, dosa, pizza..." onkeydown="if(event.key==='Enter')doSearch(this.value)"/>
+  </div>
+  <div class="nav-right">
+    <button class="nav-btn active" id="navHomeBtn" onclick="navTo('home')">🏠 Home</button>
+    <button class="nav-btn" id="navFavBtn" onclick="navTo('favorites')">❤️ Saved <span class="badge" id="favBadge" style="display:none">0</span></button>
+    <button class="hamburger" onclick="openMobDrawer()">☰</button>
+  </div>
+</nav>
+
+<!-- ═══ HOME PAGE ═══ -->
+<div class="page active" id="page-home">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-eyebrow"><span class="dot"></span> Kadapa's #1 Food Discovery Platform</div>
+    <h1>Find the <em>best food</em><br>near you, right now.</h1>
+    <p class="hero-sub">Search any dish — idli, biryani, dosa, pizza, sweets — and instantly discover the top-rated local spots with real reviews and photos.</p>
+    <div class="location-row">
+      <div class="loc-pill" onclick="detectLocation()">
+        <span class="loc-pulse"></span>
+        <span id="locText">Detecting location...</span>
+      </div>
+    </div>
+    <div class="main-search-wrap">
+      <div class="main-search-box" style="position:relative">
+        <button class="voice-btn" id="voiceBtn" onclick="startVoice()" title="Voice Search">🎙️</button>
+        <input type="text" id="mainSearch" placeholder="Try: best biryani, crispy dosa, ice cream..." onkeydown="if(event.key==='Enter')doSearch(this.value)" oninput="showSuggestions(this.value)"/>
+        <button class="search-go" onclick="doSearch(document.getElementById('mainSearch').value)">Search →</button>
+        <div class="suggestions" id="suggestions"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS BANNER -->
+  <div class="stats-banner">
+    <div class="stat-box"><div class="snum">2,400+</div><div class="slbl">Restaurants</div></div>
+    <div class="stat-box"><div class="snum">180+</div><div class="slbl">Food Types</div></div>
+    <div class="stat-box"><div class="snum">4.8★</div><div class="slbl">Avg Rating</div></div>
+  </div>
+
+  <!-- RECENT SEARCHES -->
+  <div class="section-wrap" id="recentSection" style="display:none">
+    <div class="section-header">
+      <h2>🕐 Recent Searches</h2>
+      <button class="see-all-btn" onclick="clearRecent()">Clear all</button>
+    </div>
+    <div class="recent-chips" id="recentChips"></div>
+  </div>
+
+  <!-- TRENDING FOODS -->
+  <div class="section-wrap">
+    <div class="section-header">
+      <h2>🔥 Trending in Kadapa</h2>
+      <button class="see-all-btn" onclick="doSearch('popular food')">See all</button>
+    </div>
+    <div class="trending-scroll" id="trendingScroll"></div>
+  </div>
+
+  <!-- BROWSE BY CATEGORY -->
+  <div class="section-wrap">
+    <div class="section-header">
+      <h2>Browse by Category</h2>
+    </div>
+    <div class="cat-row" id="catRow"></div>
+    <div class="cards-grid" id="homeCards"></div>
+  </div>
+
+</div><!-- /home -->
+
+<!-- ═══ RESULTS PAGE ═══ -->
+<div class="page" id="page-results">
+  <div class="results-meta">
+    <button onclick="navTo('home')" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:0.85rem;margin-bottom:12px;display:flex;align-items:center;gap:6px;font-family:'Nunito',sans-serif">← Back to Home</button>
+    <h2 id="resultsTitle">Search Results</h2>
+    <p id="resultsCount"></p>
+    <div id="aiCatTag" style="display:none" class="ai-tag">🤖 AI detected: <span id="aiCatLabel"></span></div>
+  </div>
+  <div class="section-wrap" style="padding-top:16px">
+    <div class="filter-row" id="filterRow"></div>
+    <div style="margin-top:20px" id="resultsContent"></div>
+  </div>
+</div>
+
+<!-- ═══ DETAIL PAGE ═══ -->
+<div class="page" id="page-detail">
+  <div class="detail-cover" id="detailCover">
+    <div class="detail-cover-bg" id="detailCoverBg"></div>
+    <span id="detailEmoji" class="detail-cover-emoji"></span>
+    <button class="detail-back-btn" id="detailBackBtn" onclick="navTo('results')">←</button>
+    <button class="detail-fav-btn" id="detailFavBtn" onclick="toggleDetailFav()">♡</button>
+  </div>
+  <div class="detail-body" id="detailBody"></div>
+</div>
+
+<!-- ═══ FAVORITES PAGE ═══ -->
+<div class="page" id="page-favorites">
+  <div class="section-wrap" style="padding-top:28px">
+    <div class="section-header">
+      <h2>❤️ Saved Restaurants</h2>
+      <span style="font-size:0.82rem;color:var(--text3)" id="favCount"></span>
+    </div>
+    <div id="favContent"></div>
+  </div>
+</div>
+
+<!-- AI CHAT FAB -->
+<button class="chat-fab" id="chatFab" onclick="toggleChat()" title="AI Food Assistant">🤖</button>
+
+<!-- AI CHAT PANEL -->
+<div class="chat-panel" id="chatPanel">
+  <div class="chat-head">
+    <div class="chat-head-avatar">🍽️</div>
+    <div class="chat-head-info">
+      <h3>FoodBot AI</h3>
+      <span>Online · Your food expert</span>
+    </div>
+  </div>
+  <div class="chat-messages" id="chatMessages"></div>
+  <div class="chat-quick-btns" id="quickBtns">
+    <button class="quick-btn" onclick="sendQuick('Best biryani in Kadapa?')">🍛 Best Biryani</button>
+    <button class="quick-btn" onclick="sendQuick('Cheap breakfast options?')">☀️ Cheap Breakfast</button>
+    <button class="quick-btn" onclick="sendQuick('Top rated sweets shops?')">🍮 Sweets</button>
+  </div>
+  <div class="chat-input-row">
+    <input type="text" id="chatInput" placeholder="Ask anything about food..." onkeydown="if(event.key==='Enter')sendChat()"/>
+    <button class="chat-send-btn" onclick="sendChat()">↑</button>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════
+const TRENDING_FOODS = [
+  {icon:'🍛',label:'Biryani',count:'2.1k searches',query:'biryani'},
+  {icon:'🥞',label:'Dosa',count:'1.8k searches',query:'dosa'},
+  {icon:'🫓',label:'Idli',count:'1.5k searches',query:'idli'},
+  {icon:'🍮',label:'Sweets',count:'1.2k searches',query:'sweets'},
+  {icon:'🥗',label:'Pesarattu',count:'980 searches',query:'pesarattu'},
+  {icon:'🍔',label:'Burger',count:'870 searches',query:'burger'},
+  {icon:'🍕',label:'Pizza',count:'750 searches',query:'pizza'},
+  {icon:'☕',label:'Chai',count:'700 searches',query:'chai'},
+  {icon:'🍜',label:'Noodles',count:'620 searches',query:'noodles'},
+  {icon:'🥟',label:'Samosa',count:'580 searches',query:'samosa'},
+  {icon:'🍨',label:'Ice Cream',count:'540 searches',query:'ice cream'},
+  {icon:'🧋',label:'Lassi',count:'490 searches',query:'lassi'},
+];
+
+const CATEGORIES = [
+  {id:'all',label:'🍽️ All'},
+  {id:'breakfast',label:'🌅 Breakfast'},
+  {id:'lunch',label:'☀️ Lunch'},
+  {id:'dinner',label:'🌙 Dinner'},
+  {id:'snacks',label:'🥨 Snacks'},
+  {id:'desserts',label:'🍰 Desserts'},
+  {id:'fastfood',label:'⚡ Fast Food'},
+  {id:'drinks',label:'🧋 Drinks'},
+];
+
+const FOOD_MAP = {
+  breakfast:['idli','dosa','vada','upma','pesarattu','pongal','poha','paratha','omelette','uttapam','appam','tiffin'],
+  lunch:['biryani','rice','meals','thali','pulihora','sambar','rasam','dal','roti','chole','rajma','dum'],
+  dinner:['biryani','naan','curry','korma','paneer','chicken','mutton','fish','kabab','tandoor','kebab'],
+  snacks:['samosa','pakoda','bajji','bonda','bhel','chaat','pani puri','vada pav','kachori','pakora'],
+  fastfood:['burger','pizza','sandwich','wrap','tacos','pasta','fries','hot dog','nuggets','noodles','momos'],
+  desserts:['ice cream','gulab jamun','halwa','kheer','rasgulla','jalebi','barfi','ladoo','payasam','cake','sweets','sweet'],
+  drinks:['chai','coffee','juice','lassi','milkshake','soda','tea','buttermilk','smoothie'],
+};
+
+const RESTAURANTS = [
+  {id:1,name:'Hotel Grand Andhra',cuisine:'Telugu & Andhra',emoji:'🍛',rating:4.7,reviews:842,dist:0.8,price:'₹150–300',priceN:2,open:true,cat:['lunch','dinner','breakfast'],tags:['meals','biryani','idli','dosa','pulihora'],city:'Kadapa',phone:'+91 98765 43210',hours:'6AM – 10PM',specialty:'Famous Andhra Meals & Biryani',address:'MG Road, Kadapa',badge:'Best Taste',bgColor:'#1a1208',reviews_data:[{name:'Ravi K',stars:5,text:'Best Andhra meals in the whole city! The sambar and rasam are to die for.'},{name:'Priya R',stars:4,text:'Authentic taste. Idli was soft and fluffy. Will come again!'}]},
+  {id:2,name:'Biryani House',cuisine:'Hyderabadi & Mughlai',emoji:'🫕',rating:4.5,reviews:1204,dist:1.2,price:'₹200–450',priceN:3,open:true,cat:['lunch','dinner'],tags:['biryani','chicken','mutton','dum','kebab'],city:'Kadapa',phone:'+91 98765 43211',hours:'11AM – 11PM',specialty:'Best Dum Biryani in Kadapa',address:'Station Road, Kadapa',badge:null,bgColor:'#1a0d08',reviews_data:[{name:'Suresh N',stars:5,text:'Dum biryani is absolutely perfect. The aroma itself is worth the visit!'},{name:'Anitha V',stars:4,text:'Mutton biryani is outstanding. Slightly pricey but worth every rupee.'}]},
+  {id:3,name:'Raj Darshini',cuisine:'South Indian Tiffin',emoji:'🥞',rating:4.6,reviews:596,dist:0.5,price:'₹80–180',priceN:1,open:true,cat:['breakfast','lunch','snacks'],tags:['dosa','idli','vada','sambhar','uttapam'],city:'Kadapa',phone:'+91 98765 43212',hours:'5:30AM – 1PM, 3PM – 9PM',specialty:'Crispy Masala Dosa',address:'Gandhi Nagar, Kadapa',badge:'Top Rated',bgColor:'#08150a',reviews_data:[{name:'Mahesh B',stars:5,text:'The masala dosa is the best I have had. Crispy on outside, soft inside!'},{name:'Kavitha S',stars:5,text:'Idli vada combo is excellent. Very clean place and fast service.'}]},
+  {id:4,name:'Pizza Planet',cuisine:'Italian & Fast Food',emoji:'🍕',rating:4.3,reviews:389,dist:2.1,price:'₹250–550',priceN:3,open:true,cat:['dinner','fastfood'],tags:['pizza','pasta','garlic bread','burger'],city:'Kadapa',phone:'+91 98765 43213',hours:'11AM – 11PM',specialty:'Wood-fired Thin Crust Pizzas',address:'Rajiv Nagar, Kadapa',badge:null,bgColor:'#160a08',reviews_data:[{name:'Deepak R',stars:4,text:'Wood-fired pizza is brilliant! The cheese pull is unreal.'},{name:'Swetha M',stars:4,text:'Great ambience and tasty food. The pasta was delicious too.'}]},
+  {id:5,name:'Burger Barn',cuisine:'American Fast Food',emoji:'🍔',rating:4.2,reviews:451,dist:1.7,price:'₹150–350',priceN:2,open:false,cat:['snacks','fastfood'],tags:['burger','fries','shake','wrap','nuggets'],city:'Kadapa',phone:'+91 98765 43214',hours:'10AM – 10PM',specialty:'Double Smash Burger',address:'Nehru Road, Kadapa',badge:null,bgColor:'#100c08',reviews_data:[{name:'Kiran T',stars:4,text:'The double smash burger is a game changer! Crispy and juicy at the same time.'},{name:'Roshni P',stars:4,text:'Cheese fries are addictive. Burger was fresh and properly cooked.'}]},
+  {id:6,name:'Sona Sweets',cuisine:'Indian Sweets & Snacks',emoji:'🍮',rating:4.8,reviews:1102,dist:0.3,price:'₹50–200',priceN:1,open:true,cat:['desserts','snacks'],tags:['ladoo','halwa','jalebi','kaju katli','sweets','barfi'],city:'Kadapa',phone:'+91 98765 43215',hours:'7AM – 9PM',specialty:'Fresh Ghee Sweets & Kaju Barfi',address:'Cotton Market, Kadapa',badge:'Most Loved',bgColor:'#1a0e08',reviews_data:[{name:'Padma L',stars:5,text:'The kaju katli is made with pure ghee. Best sweets shop in all of Kadapa!'},{name:'Govind R',stars:5,text:'Fresh ladoos every morning. The halwa is heavenly.'}]},
+  {id:7,name:'Chill Zone Ice Cream',cuisine:'Ice Creams & Desserts',emoji:'🍨',rating:4.4,reviews:678,dist:1.0,price:'₹60–180',priceN:1,open:true,cat:['desserts'],tags:['ice cream','sundae','shake','waffles','kulfi'],city:'Kadapa',phone:'+91 98765 43216',hours:'11AM – 11:30PM',specialty:'Mango & Rose Flavour Ice Creams',address:'Bazar Street, Kadapa',badge:null,bgColor:'#081418',reviews_data:[{name:'Arjun S',stars:5,text:'The mango ice cream is absolutely divine in summer. Best in town!'},{name:'Meena K',stars:4,text:'Great variety of flavours. The rose ice cream is very unique.'}]},
+  {id:8,name:'Spice Garden',cuisine:'Multi-Cuisine Restaurant',emoji:'🌶️',rating:4.5,reviews:734,dist:3.2,price:'₹200–500',priceN:3,open:true,cat:['lunch','dinner'],tags:['chicken','paneer','biryani','naan','tandoor'],city:'Kadapa',phone:'+91 98765 43217',hours:'12PM – 11PM',specialty:'Spicy Chicken Curry & Kebabs',address:'Old Town, Kadapa',badge:null,bgColor:'#180808',reviews_data:[{name:'Vinod M',stars:5,text:'The spicy chicken curry is to die for. Best non-veg restaurant in Kadapa!'},{name:'Lakshmi B',stars:4,text:'Paneer butter masala was excellent. Good for family dinners.'}]},
+  {id:9,name:'Tea Time Café',cuisine:'Beverages & Light Snacks',emoji:'☕',rating:4.3,reviews:290,dist:0.6,price:'₹30–120',priceN:1,open:true,cat:['snacks','drinks','breakfast'],tags:['chai','coffee','samosa','pakoda','sandwich'],city:'Kadapa',phone:'+91 98765 43218',hours:'5:30AM – 9PM',specialty:'Kadak Masala Chai & Samosa',address:'Clock Tower Road, Kadapa',badge:null,bgColor:'#0f0c08',reviews_data:[{name:'Ramesh V',stars:4,text:'Best chai in Kadapa period. The samosas are always fresh and hot.'},{name:'Usha P',stars:5,text:'Perfect evening chai and pakoda combo. Very affordable.'}]},
+  {id:10,name:'Noodle House',cuisine:'Chinese & Asian Fusion',emoji:'🍜',rating:4.1,reviews:312,dist:2.5,price:'₹150–350',priceN:2,open:false,cat:['lunch','dinner','fastfood'],tags:['noodles','fried rice','momos','manchurian','soup'],city:'Kadapa',phone:'+91 98765 43219',hours:'11AM – 10PM',specialty:'Dragon Noodles & Steamed Momos',address:'Subash Road, Kadapa',badge:null,bgColor:'#081018',reviews_data:[{name:'Sanjay K',stars:4,text:'Dragon noodles are very good! Spicy and flavourful.'},{name:'Divya T',stars:4,text:'Momos are soft and tasty. The dipping sauce is excellent.'}]},
+  {id:11,name:'Pesarattu Corner',cuisine:'Andhra Special Tiffins',emoji:'🫓',rating:4.6,reviews:487,dist:0.9,price:'₹60–150',priceN:1,open:true,cat:['breakfast','snacks'],tags:['pesarattu','upma','ginger chutney','idli','vada'],city:'Kadapa',phone:'+91 98765 43220',hours:'6AM – 12:30PM',specialty:'Green Moong Dal Pesarattu',address:'Railway Colony, Kadapa',badge:'Local Gem',bgColor:'#080f08',reviews_data:[{name:'Nageswara R',stars:5,text:'Authentic Andhra pesarattu with ginger chutney. Nothing better for breakfast!'},{name:'Vasudha C',stars:5,text:'The pesarattu here is incredibly crispy. Must visit for breakfast.'}]},
+  {id:12,name:'Royale Kebab House',cuisine:'Mughlai & BBQ Grills',emoji:'🍢',rating:4.7,reviews:892,dist:1.8,price:'₹250–600',priceN:3,open:true,cat:['dinner','lunch'],tags:['kabab','seekh','tikka','naan','biryani','tandoor'],city:'Kadapa',phone:'+91 98765 43221',hours:'12PM – 12AM',specialty:'Seekh Kebab & Mutton Tikka',address:'Fort Road, Kadapa',badge:'Top Rated',bgColor:'#180e08',reviews_data:[{name:'Abbas K',stars:5,text:'Best kebabs in Kadapa. The seekh kebab is authentic Mughlai taste!'},{name:'Farida B',stars:5,text:'Mutton tikka was perfectly marinated and grilled. Excellent service.'}]},
+  {id:13,name:'South Spice Dhaba',cuisine:'South Indian & Dhaba Style',emoji:'🥘',rating:4.4,reviews:563,dist:1.4,price:'₹100–250',priceN:2,open:true,cat:['lunch','dinner','breakfast'],tags:['meals','dosa','biryani','fish curry','mutton'],city:'Kadapa',phone:'+91 98765 43222',hours:'7AM – 10PM',specialty:'Fish Curry & Andhra Meals',address:'Bypass Road, Kadapa',badge:null,bgColor:'#080d12',reviews_data:[{name:'Narayana R',stars:5,text:'Fish curry here is absolutely divine! Perfect Andhra taste.'},{name:'Sailaja P',stars:4,text:'Unlimited meals with great variety. Very filling and affordable.'}]},
+  {id:14,name:'Fresh Juice Corner',cuisine:'Juices, Smoothies & Drinks',emoji:'🧃',rating:4.5,reviews:345,dist:0.7,price:'₹40–120',priceN:1,open:true,cat:['drinks','snacks'],tags:['juice','smoothie','lassi','milkshake','coconut water'],city:'Kadapa',phone:'+91 98765 43223',hours:'8AM – 9PM',specialty:'Fresh Fruit Juices & Sugarcane',address:'Ambedkar Nagar, Kadapa',badge:null,bgColor:'#081210',reviews_data:[{name:'Rekha V',stars:5,text:'The mixed fruit juice is so refreshing. Fresh ingredients every time!'},{name:'Arun B',stars:4,text:'Best lassi in the area. Thick and perfectly sweetened.'}]},
+  {id:15,name:'Masala Magic',cuisine:'Street Food & Chaat',emoji:'🥗',rating:4.3,reviews:421,dist:1.1,price:'₹30–100',priceN:1,open:true,cat:['snacks'],tags:['chaat','pani puri','bhel puri','samosa','pakoda','vada pav'],city:'Kadapa',phone:'+91 98765 43224',hours:'4PM – 10PM',specialty:'Pani Puri & Bhel Puri',address:'Market Road, Kadapa',badge:null,bgColor:'#120e08',reviews_data:[{name:'Harini S',stars:4,text:'The pani puri is so tasty! Best street food stall in Kadapa.'},{name:'Mohan K',stars:5,text:'Bhel puri is perfectly seasoned. Great place to hang out in evenings.'}]},
+  {id:16,name:'Bakery Bliss',cuisine:'Bakery & Confectionery',emoji:'🎂',rating:4.4,reviews:287,dist:0.8,price:'₹60–300',priceN:2,open:true,cat:['desserts','snacks'],tags:['cake','bread','pastry','cookies','puffs'],city:'Kadapa',phone:'+91 98765 43225',hours:'7AM – 9PM',specialty:'Custom Cakes & Fresh Pastries',address:'Nehru Circle, Kadapa',badge:null,bgColor:'#140a10',reviews_data:[{name:'Sindhu R',stars:5,text:'The custom birthday cake was perfect! Very fresh and delicious.'},{name:'Praveen C',stars:4,text:'Bread and puffs are always fresh. Great bakery in the area.'}]},
+];
+
+// ══════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════
+let favorites = JSON.parse(localStorage.getItem('off_favs')||'[]');
+let recent = JSON.parse(localStorage.getItem('off_recent')||'[]');
+let searchResults = [];
+let currentRest = null;
+let currentPage = 'home';
+let activeCat = 'all';
+let activeFilter = 'all';
+let chatOpen = false;
+let chatHistory = [];
+let userCity = 'Kadapa, AP';
+
+const SUGGESTIONS_LIST = ['biryani','dosa','idli','vada','pesarattu','burger','pizza','ice cream','sweets','chai','noodles','samosa','pakoda','kebab','tandoor','meals','fish curry','milkshake','lassi','pani puri'];
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+window.onload = () => {
+  setTimeout(() => { document.getElementById('loader').classList.add('hide'); }, 1500);
+  detectLocation();
+  renderTrending();
+  renderCategories();
+  renderHomeCards('all');
+  renderRecent();
+  updateFavBadge();
+  initChat();
+};
+
+// ══════════════════════════════════════════
+// LOCATION
+// ══════════════════════════════════════════
+function detectLocation() {
+  const el = document.getElementById('locText');
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      pos => { el.textContent = '📍 ' + userCity; },
+      ()  => { el.textContent = '📍 ' + userCity; }
+    );
+  } else {
+    el.textContent = '📍 ' + userCity;
+  }
+}
+
+// ══════════════════════════════════════════
+// TRENDING
+// ══════════════════════════════════════════
+function renderTrending() {
+  document.getElementById('trendingScroll').innerHTML = TRENDING_FOODS.map(t => `
+    <div class="trend-card" onclick="doSearch('${t.query}')">
+      <div class="trend-icon">${t.icon}</div>
+      <div><div class="trend-label">${t.label}</div><div class="trend-count">${t.count}</div></div>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════════
+// CATEGORIES
+// ══════════════════════════════════════════
+function renderCategories() {
+  document.getElementById('catRow').innerHTML = CATEGORIES.map(c => `
+    <button class="cat-chip ${c.id==='all'?'active':''}" onclick="selectCat('${c.id}',this)">${c.label}</button>
+  `).join('');
+}
+function selectCat(id, btn) {
+  document.querySelectorAll('.cat-chip').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  activeCat = id;
+  renderHomeCards(id);
+}
+
+// ══════════════════════════════════════════
+// HOME CARDS
+// ══════════════════════════════════════════
+function renderHomeCards(cat) {
+  const list = cat === 'all' ? RESTAURANTS : RESTAURANTS.filter(r => r.cat.includes(cat));
+  document.getElementById('homeCards').innerHTML = list.map(r => cardHTML(r)).join('');
+}
+
+// ══════════════════════════════════════════
+// CARD HTML
+// ══════════════════════════════════════════
+function cardHTML(r) {
+  const faved = favorites.includes(r.id);
+  const distLabel = r.dist < 1 ? (r.dist*1000)+'m' : r.dist+'km';
+  return `
+  <div class="rest-card" onclick="openDetail(${r.id})">
+    <div class="card-thumb">
+      <div class="card-thumb-bg" style="background:linear-gradient(135deg,${r.bgColor},#0d0d14)"></div>
+      <span class="card-thumb-emoji">${r.emoji}</span>
+      <span class="card-status ${r.open?'open':'closed'}">${r.open?'● Open':'● Closed'}</span>
+      <button class="card-fav-btn ${faved?'faved':''}" onclick="event.stopPropagation();toggleFav(${r.id},this)" aria-label="Save">${faved?'❤️':'🤍'}</button>
+      ${r.badge?`<span class="card-badge">✦ ${r.badge}</span>`:''}
+    </div>
+    <div class="card-body">
+      <div class="card-name">${r.name}</div>
+      <div class="card-cuisine">${r.cuisine}</div>
+      <div class="card-stats">
+        <span class="cstat rating">★ ${r.rating} <span style="color:var(--text3);font-weight:400">(${r.reviews.toLocaleString()})</span></span>
+        <span class="cstat dist">📍 ${distLabel}</span>
+        <span class="cstat price">${r.price}</span>
+      </div>
+      <div class="card-tags">${r.tags.slice(0,4).map(t=>`<span class="ctag">${t}</span>`).join('')}</div>
+      <div class="card-actions">
+        <button class="btn-directions" onclick="event.stopPropagation();openMaps('${r.name}')">🗺️ Directions</button>
+        <button class="btn-save ${faved?'faved':''}" onclick="event.stopPropagation();toggleFav(${r.id},this)">${faved?'❤️':'♡'}</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ══════════════════════════════════════════
+// SEARCH
+// ══════════════════════════════════════════
+function doSearch(q) {
+  q = (q||'').trim();
+  if (!q) return;
+  hideSuggestions();
+  addRecent(q);
+  // sync nav search
+  document.getElementById('navSearchInput').value = q;
+  document.getElementById('mainSearch').value = q;
+  runSearch(q);
+}
+
+function detectCategory(q) {
+  q = q.toLowerCase();
+  for (const [cat, foods] of Object.entries(FOOD_MAP)) {
+    if (foods.some(f => q.includes(f) || f.includes(q))) return cat;
+  }
+  return null;
+}
+
+function runSearch(query) {
+  navTo('results');
+  document.getElementById('resultsTitle').textContent = `Results for "${query}"`;
+  document.getElementById('resultsCount').textContent = '';
+  document.getElementById('aiCatTag').style.display = 'none';
+  document.getElementById('resultsContent').innerHTML = `<div class="loading-wrap"><div class="loading-food-icon">🔍</div><div class="spin"></div><p>Finding the best ${query} spots near you...</p></div>`;
+
+  setTimeout(() => {
+    const q = query.toLowerCase();
+    const detectedCat = detectCategory(query);
+
+    if (detectedCat) {
+      document.getElementById('aiCatTag').style.display = 'inline-flex';
+      const catObj = CATEGORIES.find(c => c.id === detectedCat);
+      document.getElementById('aiCatLabel').textContent = catObj ? catObj.label : detectedCat;
+    }
+
+    let results = RESTAURANTS.filter(r =>
+      r.tags.some(t => t.includes(q) || q.includes(t)) ||
+      r.name.toLowerCase().includes(q) ||
+      r.cuisine.toLowerCase().includes(q) ||
+      r.specialty.toLowerCase().includes(q) ||
+      (detectedCat && r.cat.includes(detectedCat))
+    );
+
+    if (!results.length && detectedCat) results = RESTAURANTS.filter(r => r.cat.includes(detectedCat));
+    if (!results.length) results = RESTAURANTS.slice(0, 8);
+
+    searchResults = results;
+    activeFilter = 'all';
+    renderFilters();
+    renderResults(results);
+    document.getElementById('resultsCount').textContent = `${results.length} places found near ${userCity}`;
+  }, 800);
+}
+
+// ══════════════════════════════════════════
+// FILTERS
+// ══════════════════════════════════════════
+function renderFilters() {
+  const filters = [
+    {id:'all',label:'🍽️ All'},
+    {id:'toprated',label:'⭐ Top Rated'},
+    {id:'cheap',label:'💚 Cheap & Best'},
+    {id:'open',label:'🟢 Open Now'},
+    {id:'nearest',label:'📍 Nearest'},
+  ];
+  document.getElementById('filterRow').innerHTML = filters.map(f =>
+    `<button class="filter-btn ${f.id===activeFilter?'active':''}" onclick="applyFilter('${f.id}',this)">${f.label}</button>`
+  ).join('');
+}
+
+function applyFilter(id, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  activeFilter = id;
+  let list = [...searchResults];
+  if (id === 'toprated') list.sort((a,b) => b.rating - a.rating);
+  else if (id === 'cheap') list = list.filter(r => r.priceN <= 1).sort((a,b) => a.priceN - b.priceN);
+  else if (id === 'open') list = list.filter(r => r.open);
+  else if (id === 'nearest') list.sort((a,b) => a.dist - b.dist);
+  renderResults(list);
+}
+
+function renderResults(list) {
+  const el = document.getElementById('resultsContent');
+  if (!list.length) {
+    el.innerHTML = `<div class="empty-state"><div class="icon">😕</div><h3>No results found</h3><p>Try a different dish or food item</p></div>`;
+    return;
+  }
+  el.innerHTML = `<div class="cards-grid">${list.map(r => cardHTML(r)).join('')}</div>`;
+}
+
+// ══════════════════════════════════════════
+// SUGGESTIONS
+// ══════════════════════════════════════════
+function showSuggestions(val) {
+  const box = document.getElementById('suggestions');
+  if (!val || val.length < 1) { box.classList.remove('open'); return; }
+  const matches = SUGGESTIONS_LIST.filter(s => s.includes(val.toLowerCase())).slice(0,6);
+  if (!matches.length) { box.classList.remove('open'); return; }
+  box.innerHTML = matches.map(m => {
+    const icon = TRENDING_FOODS.find(t => t.query === m)?.icon || '🔍';
+    return `<div class="sug-item" onclick="doSearch('${m}')"><span class="sug-icon">${icon}</span>${m}</div>`;
+  }).join('');
+  box.classList.add('open');
+}
+function hideSuggestions() { document.getElementById('suggestions').classList.remove('open'); }
+document.addEventListener('click', e => { if (!e.target.closest('.main-search-box')) hideSuggestions(); });
+
+// ══════════════════════════════════════════
+// DETAIL
+// ══════════════════════════════════════════
+function openDetail(id) {
+  currentRest = RESTAURANTS.find(r => r.id === id);
+  if (!currentRest) return;
+  const r = currentRest;
+  const faved = favorites.includes(r.id);
+  document.getElementById('detailEmoji').textContent = r.emoji;
+  document.getElementById('detailCoverBg').style.background = `linear-gradient(135deg,${r.bgColor},#0d0d14)`;
+  document.getElementById('detailFavBtn').textContent = faved ? '❤️' : '♡';
+  document.getElementById('detailFavBtn').className = `detail-fav-btn ${faved?'faved':''}`;
+  const distLabel = r.dist < 1 ? (r.dist*1000)+'m away' : r.dist+'km away';
+  document.getElementById('detailBody').innerHTML = `
+    <div class="detail-name">${r.name}</div>
+    <div class="detail-cuisine">${r.cuisine} · ${r.city}</div>
+    ${r.badge?`<div style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,rgba(255,106,47,0.15),rgba(255,201,71,0.1));border:1px solid rgba(255,106,47,0.3);color:var(--orange);border-radius:50px;padding:5px 16px;font-size:0.78rem;font-weight:700;margin-bottom:16px">✦ ${r.badge}</div>`:''}
+    <div class="detail-chips">
+      <div class="detail-chip ${r.open?'open-chip':'closed-chip'}">
+        <span>${r.open?'●':'●'}</span>${r.open?'Open Now':'Closed'}
+      </div>
+      <div class="detail-chip">★ ${r.rating} <span style="color:var(--text3)">(${r.reviews.toLocaleString()} reviews)</span></div>
+      <div class="detail-chip">📍 ${distLabel}</div>
+      <div class="detail-chip">💰 ${r.price}</div>
+    </div>
+
+    <div class="detail-section-title">Specialty</div>
+    <p style="color:var(--orange);font-weight:600;font-size:1rem;margin-bottom:20px">✨ ${r.specialty}</p>
+
+    <div class="detail-section-title">Popular Dishes</div>
+    <div class="detail-tags-wrap" style="margin-bottom:20px">${r.tags.map(t=>`<span class="detail-tag">${t}</span>`).join('')}</div>
+
+    <div class="detail-section-title">Restaurant Info</div>
+    <div class="detail-grid">
+      <div class="detail-info-box"><div class="lbl">Cuisine Type</div><div class="val">${r.cuisine}</div></div>
+      <div class="detail-info-box"><div class="lbl">Opening Hours</div><div class="val">${r.hours}</div></div>
+      <div class="detail-info-box"><div class="lbl">Contact</div><div class="val">${r.phone}</div></div>
+      <div class="detail-info-box"><div class="lbl">Address</div><div class="val">${r.address}</div></div>
+    </div>
+
+    <div class="detail-section-title">Customer Reviews</div>
+    <div class="review-list">${r.reviews_data.map(rv => `
+      <div class="review-card">
+        <div class="review-top">
+          <div class="review-avatar">${rv.name[0]}</div>
+          <div><div class="review-name">${rv.name}</div><div class="review-stars">${'★'.repeat(rv.stars)}${'☆'.repeat(5-rv.stars)}</div></div>
+        </div>
+        <div class="review-text">${rv.text}</div>
+      </div>`).join('')}
+    </div>
+
+    <button class="btn-big-maps" onclick="openMaps('${r.name}')">🗺️ Get Directions on Google Maps</button>
+    <button class="btn-big-share" onclick="shareRest(${r.id})">📤 Share This Restaurant</button>
+  `;
+  navTo('detail');
+}
+
+function toggleDetailFav() {
+  if (!currentRest) return;
+  toggleFav(currentRest.id, document.getElementById('detailFavBtn'));
+  const faved = favorites.includes(currentRest.id);
+  document.getElementById('detailFavBtn').textContent = faved ? '❤️' : '♡';
+  document.getElementById('detailFavBtn').className = `detail-fav-btn ${faved?'faved':''}`;
+}
+
+// ══════════════════════════════════════════
+// FAVORITES
+// ══════════════════════════════════════════
+function toggleFav(id, btn) {
+  if (favorites.includes(id)) {
+    favorites = favorites.filter(f => f !== id);
+    showToast('Removed from saved');
+  } else {
+    favorites.push(id);
+    showToast('❤️ Saved to favorites!');
+  }
+  localStorage.setItem('off_favs', JSON.stringify(favorites));
+  // update all buttons for this id
+  document.querySelectorAll('.card-fav-btn,.btn-save').forEach(b => {
+    const oc = b.getAttribute('onclick') || '';
+    if (oc.includes(`toggleFav(${id}`)) {
+      const isFav = favorites.includes(id);
+      b.classList.toggle('faved', isFav);
+      if (b.classList.contains('card-fav-btn')) b.textContent = isFav ? '❤️' : '🤍';
+      else b.textContent = isFav ? '❤️' : '♡';
+    }
+  });
+  updateFavBadge();
+}
+
+function renderFavorites() {
+  const list = RESTAURANTS.filter(r => favorites.includes(r.id));
+  document.getElementById('favCount').textContent = `${list.length} saved`;
+  const el = document.getElementById('favContent');
+  if (!list.length) {
+    el.innerHTML = `<div class="fav-empty"><div class="big-icon">💔</div><h3>Nothing saved yet</h3><p>Tap the heart icon on any restaurant to save it here.</p><button onclick="navTo('home')" class="search-go">Discover Food →</button></div>`;
+  } else {
+    el.innerHTML = `<div class="cards-grid">${list.map(r => cardHTML(r)).join('')}</div>`;
+  }
+}
+
+function updateFavBadge() {
+  const badge = document.getElementById('favBadge');
+  if (favorites.length > 0) { badge.style.display = 'flex'; badge.textContent = favorites.length; }
+  else badge.style.display = 'none';
+}
+
+// ══════════════════════════════════════════
+// RECENT SEARCHES
+// ══════════════════════════════════════════
+function addRecent(q) {
+  recent = [q, ...recent.filter(r => r !== q)].slice(0, 8);
+  localStorage.setItem('off_recent', JSON.stringify(recent));
+  renderRecent();
+}
+function removeRecent(q) {
+  recent = recent.filter(r => r !== q);
+  localStorage.setItem('off_recent', JSON.stringify(recent));
+  renderRecent();
+}
+function clearRecent() {
+  recent = [];
+  localStorage.removeItem('off_recent');
+  renderRecent();
+}
+function renderRecent() {
+  const sec = document.getElementById('recentSection');
+  const wrap = document.getElementById('recentChips');
+  if (!recent.length) { sec.style.display = 'none'; return; }
+  sec.style.display = 'block';
+  wrap.innerHTML = recent.map(r => `
+    <div class="recent-chip" onclick="doSearch('${r}')">
+      🕐 ${r}
+      <span class="x" onclick="event.stopPropagation();removeRecent('${r}')">✕</span>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════════
+// MAPS & SHARE
+// ══════════════════════════════════════════
+function openMaps(name) {
+  window.open(`https://www.google.com/maps/search/${encodeURIComponent(name+' '+userCity)}`, '_blank');
+}
+function shareRest(id) {
+  const r = RESTAURANTS.find(x => x.id === id);
+  if (!r) return;
+  const text = `Check out ${r.name} in Kadapa! Rating: ★${r.rating} | ${r.specialty} | Find it on ObulReddy Food Finder`;
+  if (navigator.share) { navigator.share({ title: r.name, text }); }
+  else { navigator.clipboard.writeText(text); showToast('📋 Copied to clipboard!'); }
+}
+
+// ══════════════════════════════════════════
+// VOICE SEARCH
+// ══════════════════════════════════════════
+function startVoice() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { showToast('🎙️ Voice not supported in this browser'); return; }
+  const r = new SR();
+  r.lang = 'en-IN';
+  const btn = document.getElementById('voiceBtn');
+  r.onstart = () => btn.classList.add('on');
+  r.onresult = e => {
+    const t = e.results[0][0].transcript;
+    document.getElementById('mainSearch').value = t;
+    btn.classList.remove('on');
+    doSearch(t);
+  };
+  r.onerror = () => { btn.classList.remove('on'); showToast('Voice failed. Try again.'); };
+  r.onend = () => btn.classList.remove('on');
+  r.start();
+}
+
+// ══════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════
+function navTo(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.getElementById('navHomeBtn').classList.toggle('active', page==='home');
+  document.getElementById('navFavBtn').classList.toggle('active', page==='favorites');
+  currentPage = page;
+  if (page === 'favorites') renderFavorites();
+  if (page === 'detail') document.getElementById('detailBackBtn').onclick = currentPage === 'home' ? ()=>navTo('home') : ()=>navTo('results');
+  window.scrollTo(0, 0);
+}
+// set detail back button to results if coming from results
+function openDetailFrom(id, fromPage) {
+  openDetail(id);
+  document.getElementById('detailBackBtn').onclick = () => navTo(fromPage || 'results');
+}
+
+// ══════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+// ══════════════════════════════════════════
+// MOBILE DRAWER
+// ══════════════════════════════════════════
+function openMobDrawer() {
+  document.getElementById('mobDrawer').classList.add('open');
+  document.getElementById('mobOverlay').classList.add('show');
+}
+function closeMobDrawer() {
+  document.getElementById('mobDrawer').classList.remove('open');
+  document.getElementById('mobOverlay').classList.remove('show');
+}
+
+// ══════════════════════════════════════════
+// AI CHAT
+// ══════════════════════════════════════════
+function toggleChat() {
+  chatOpen = !chatOpen;
+  const panel = document.getElementById('chatPanel');
+  const fab = document.getElementById('chatFab');
+  if (chatOpen) {
+    panel.classList.add('open');
+    fab.textContent = '✕';
+    fab.classList.add('open');
+    document.getElementById('chatInput').focus();
+  } else {
+    panel.classList.remove('open');
+    fab.textContent = '🤖';
+    fab.classList.remove('open');
+  }
+}
+function openChat() { if (!chatOpen) toggleChat(); }
+
+function initChat() {
+  addBotMessage("Hey there! 👋 I'm FoodBot, your AI food assistant. Ask me anything — best restaurants in Kadapa, food recommendations, or what to eat for breakfast today!");
+}
+
+function addBotMessage(text) {
+  const msgs = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'msg bot';
+  div.textContent = text;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function addUserMessage(text) {
+  const msgs = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'msg user';
+  div.textContent = text;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function addTypingIndicator() {
+  const msgs = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'msg bot';
+  div.id = 'typing-ind';
+  div.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+async function sendChat() {
+  const inp = document.getElementById('chatInput');
+  const text = inp.value.trim();
+  if (!text) return;
+  inp.value = '';
+  addUserMessage(text);
+  chatHistory.push({ role:'user', content:text });
+  document.getElementById('quickBtns').style.display = 'none';
+
+  const typing = addTypingIndicator();
+
+  const systemPrompt = `You are FoodBot, a friendly AI food assistant for "ObulReddy Food Finder" — a hyperlocal food discovery platform in Kadapa, Andhra Pradesh, India. Help users find the best food spots, recommend dishes, explain cuisines, and give suggestions. Keep answers concise (2–4 sentences), warm, and practical. Mention local Kadapa context when relevant. If asked to search, suggest using the search bar. Available restaurants: ${RESTAURANTS.map(r => `${r.name} (${r.cuisine}, famous for ${r.specialty}, rating ${r.rating})`).join('; ')}.`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system:systemPrompt,
+        messages:chatHistory
+      })
+    });
+    const data = await res.json();
+    const reply = data.content?.[0]?.text || "I'm having trouble right now. Try searching directly using the search bar!";
+    typing.remove();
+    addBotMessage(reply);
+    chatHistory.push({ role:'assistant', content:reply });
+
+    // Suggest search if food mentioned
+    const foodWords = ['biryani','dosa','idli','pizza','burger','sweet','ice cream','noodle','samosa','chai','kebab','pesarattu'];
+    const match = foodWords.find(w => text.toLowerCase().includes(w));
+    if (match) {
+      setTimeout(() => {
+        const msgs = document.getElementById('chatMessages');
+        const tip = document.createElement('div');
+        tip.className = 'msg bot';
+        tip.innerHTML = `<span style="color:var(--orange);cursor:pointer;text-decoration:underline" onclick="doSearch('${match}');toggleChat()">🔍 Search "${match}" spots near you →</span>`;
+        msgs.appendChild(tip);
+        msgs.scrollTop = msgs.scrollHeight;
+      }, 500);
+    }
+  } catch(e) {
+    typing.remove();
+    addBotMessage("Couldn't connect right now! But you can still search for any food using the search bar above. 🍽️");
+  }
+}
+
+function sendQuick(q) {
+  document.getElementById('chatInput').value = q;
+  sendChat();
+}
+</script>
+</body>
+</html>
